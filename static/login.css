@@ -1,91 +1,126 @@
-/* static/login.css */
-
-/* Basic Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    height: 100vh; /* Full viewport height */
-    display: flex; /* Use flexbox for layout */
-    justify-content: center; /* Center contents horizontally */
-    align-items: center; /* Center contents vertically */
-    background-color: #f4f4f4; /* Light gray background for the whole page */
+body, html {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-image: url('https://img.freepik.com/free-vector/medical-healthcare-blue-color_1017-26807.jpg');
+    background-size: cover;
 }
 
-.container {
-    display: flex; /* Use flexbox to divide sections */
-    width: 80%; /* Set a width for the container */
-    max-width: 1200px; /* Maximum width for larger screens */
-    height: 70%; /* Height of the container */
-    border-radius: 8px; /* Rounded corners */
-    overflow: hidden; /* Hide overflow for rounded corners */
+/* Center both the image and login form within the page */
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-.login-container {
-    width: 50%; /* Take up half the width */
-    padding: 40px; /* Add padding */
-    background-color: white; /* White background for the login box */
-    display: flex; /* Flexbox for vertical alignment */
-    flex-direction: column; /* Stack children vertically */
-    justify-content: center; /* Center items vertically */
-    align-items: center; /* Center items horizontally */
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 900px; /* Increased width for the overall container */
 }
 
-h2 {
-    margin-bottom: 20px; /* Space below the heading */
+.left-side, .right-side {
+    flex: 1;
+    max-width: 450px; /* Increased max-width for each side */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-side img {
+    max-width: 100%;
+    height: auto;
+    padding: 20px;
+}
+
+.right-side {
+    padding: 20px;
+    text-align: center;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 400px; /* Increased max-width of the form */
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333;
+}
+
+.login-form h2 {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 20px;
 }
 
 .form-group {
-    margin-bottom: 15px; /* Space between form groups */
-    width: 100%; /* Full width for form groups */
+    margin-bottom: 15px;
+    text-align: left;
 }
 
-label {
-    display: block; /* Make labels block elements */
-    margin-bottom: 5px; /* Space below labels */
+.form-group label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
 }
 
-input[type="text"],
-input[type="password"] {
-    width: 100%; /* Full width */
-    padding: 10px; /* Padding for inputs */
-    border: 1px solid #ccc; /* Light gray border */
-    border-radius: 4px; /* Rounded corners for inputs */
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions a {
+    font-size: 12px;
+    color: #6a5acd;
 }
 
 button {
-    width: 100%; /* Full width */
-    padding: 10px;
-    background-color: #28a745; /* Green background */
-    color: white; /* White text */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
+    padding: 10px 20px;
+    background-color: #6a5acd;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 button:hover {
-    background-color: #218838; /* Darker green on hover */
+    background-color: #5b4dbf;
 }
 
 p {
-    text-align: center; /* Center paragraph */
-    margin-top: 15px; /* Space above the paragraph */
+    margin-top: 15px;
+    font-size: 12px;
 }
 
-/* Image Section */
-.image-container {
-    width: 50%; /* Take up half the width */
-    background-color: #f4f4f4; /* Light gray background for the image section */
-    display: flex; /* Flexbox for centering image */
-    justify-content: center; /* Center image horizontally */
-    align-items: center; /* Center image vertically */
-}
-
-.image-container img {
-    max-width: 100%; /* Responsive image */
-    height: auto; /* Maintain aspect ratio */
+p a {
+    color: #6a5acd;
+    text-decoration: none;
 }
