@@ -3,46 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - Pharmacy Database Management System</title>
+    <title>About Us - Pharmacy Database Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-        <nav>
-        </nav>
-        <h1>About Our Pharmacy Database Management System</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Introduction</h2>
-            <p>Welcome to our Pharmacy Database Management System! This project is designed to streamline the management of pharmacy operations, including inventory management, sales tracking, and customer information handling.</p>
-        </section>
-        <section>
-            <h2>Features</h2>
-            <ul>
-                <li>Efficient inventory management</li>
-                <li>Sales tracking and reporting</li>
-                <li>Customer information management</li>
-                <li>Expiration date notifications</li>
-                <li>Detailed stock movement reports</li>
-            </ul>
-        </section>
-        <section>
-            <h2>Technologies Used</h2>
-            <ul>
-                <li>Flask (Python-based web framework)</li>
-                <li>MySQL (Database)</li>
-                <li>HTML, CSS (Frontend)</li>
-                <li>JavaScript (Optional, for additional frontend functionality)</li>
-            </ul>
-        </section>
-        <section>
-            <h2>Team</h2>
-            <p>This project is developed by [Your Name] and the team as part of our DBMS coursework.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 Pharmacy Database Management System</p>
-    </footer>
+    <div class="container">
+        <div class="left-half"></div>
+        <div class="right-half">
+            <nav>
+                <a href="/login_customer">Login as Customer</a>
+                <a href="/login_pharmacist">Login as Pharmacist</a>
+            </nav>
+            <div class="content">
+                <h1>About Our Pharmacy</h1>
+                <p>
+                    Welcome to our Pharmacy Database Management System. Our goal is to provide a seamless
+                    and efficient way to manage your pharmacy needs. Whether you are a customer looking to
+                    refill your prescription or a pharmacist managing inventory, our system is designed to 
+                    make your life easier.
+                </p>
+                <p>
+                    Our system offers a range of features including real-time inventory tracking, customer 
+                    management, and detailed reporting. We are committed to ensuring that your experience 
+                    with us is as smooth and convenient as possible.
+                </p>
+                <p>
+                    Thank you for choosing our pharmacy. We look forward to serving you!
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

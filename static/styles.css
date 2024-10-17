@@ -1,47 +1,109 @@
-/* Styling the body */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f5;
+body, html {
     margin: 0;
     padding: 0;
-    text-align: center;
+    height: 100%;
+    font-family: Arial, sans-serif;
 }
 
-/* Styling the header */
-h1 {
-    color: #2c3e50;
-    font-size: 36px;
-    margin-top: 20px;
+.container {
+    display: flex;
+    height: 100%;
 }
 
-/* Styling the navigation menu */
+.left-half {
+    width: 50%;
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQmZ-ZWKacmL3FPvLsgWwcYUtwfyIJpYAPkw&s ');
+    background-size: cover;
+    background-position: center;
+}
+
+.right-half {
+    width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 nav {
-    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
 }
 
 nav a {
-    text-decoration: none;
-    color: #fff;
-    background-color: #3498db;
+    background-color: #007BFF;
+    color: white;
     padding: 10px 20px;
-    margin: 0 10px;
+    text-decoration: none;
     border-radius: 5px;
-    font-size: 16px;
 }
 
 nav a:hover {
-    background-color: #2980b9;
+    background-color: #0056b3;
 }
 
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 28px;
-    }
-    nav a {
-        display: block;
-        margin: 10px 0;
-        padding: 10px;
-        font-size: 14px;
-    }
+.content {
+    margin-top: 50px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+p a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
 }

@@ -1,81 +1,89 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
-from mysql.connector import Error
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = os.urandom(24)
 
-# Database connection configuration
+# Database connection details
 db_config = {
-    'host': 'localhost',
     'user': 'root',
-    'password': 'root',
+    'password': 'password',
+    'host': 'localhost',
     'database': 'pharmacy_db'
 }
 
 def get_db_connection():
-    try:
-        connection = mysql.connector.connect(**db_config)
-        if connection.is_connected():
-            return connection
-    except Error as e:
-        print(f"Error: {e}")
-        return None
+    connection = mysql.connector.connect(**db_config)
+    return connection
 
 @app.route('/')
-def home():
-    return """
-    <h1>Welcome to the Pharmacy Database Management System</h1>
-    <nav>
-        <a href='/about'>About Us</a>
-        <a href='/login'>Login</a>
-        <a href='/signup'>Signup</a>
-    </nav>
-    """
-
-@app.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/login_customer', methods=['GET', 'POST'])
+def login_customer():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM pharmacy_users WHERE username = %s AND password = %s", (username, password))
+        cursor.execute("SELECT * FROM pharmacy WHERE username=%s AND password=%s AND role='customer'", (username, password))
         user = cursor.fetchone()
+        cursor.close()
         connection.close()
-        
         if user:
-            flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+            return "Customer logged in successfully!"
         else:
-            flash('Invalid credentials, please try again.', 'danger')
-    
-    return render_template('login.html')
+            flash('Invalid username or password')
+    return render_template('login_customer.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
+@app.route('/login_pharmacist', methods=['GET', 'POST'])
+def login_pharmacist():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         connection = get_db_connection()
         cursor = connection.cursor()
-        try:
-            cursor.execute("INSERT INTO pharmacy_users (username, password) VALUES (%s, %s)", (username, password))
-            connection.commit()
-            flash('Signup successful! Please login.', 'success')
-            return redirect(url_for('login'))
-        except mysql.connector.IntegrityError:
-            flash('Username already exists. Please choose a different username.', 'danger')
-        finally:
-            connection.close()
-    
-    return render_template('signup.html')
+        cursor.execute("SELECT * FROM pharmacy WHERE username=%s AND password=%s AND role='pharmacist'", (username, password))
+        user = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        if user:
+            return "Pharmacist logged in successfully!"
+        else:
+            flash('Invalid username or password')
+    return render_template('login_pharmacist.html')
+
+@app.route('/register_customer', methods=['GET', 'POST'])
+def register_customer():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO pharmacy (username, password, role) VALUES (%s, %s, %s)", (username, password, 'customer'))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        flash('Customer registration successful! You can now log in.')
+        return redirect(url_for('login_customer'))
+    return render_template('register_customer.html')
+
+@app.route('/register_pharmacist', methods=['GET', 'POST'])
+def register_pharmacist():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO pharmacy (username, password, role) VALUES (%s, %s, %s)", (username, password, 'pharmacist'))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        flash('Pharmacist registration successful! You can now log in.')
+        return redirect(url_for('login_pharmacist'))
+    return render_template('register_pharmacist.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
