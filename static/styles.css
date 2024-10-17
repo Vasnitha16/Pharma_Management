@@ -19,7 +19,7 @@ body, html {
 
 .right-half {
     width: 50%;
-    background-color:beige;
+    background-image: url('https://img.freepik.com/free-vector/medical-healthcare-blue-color_1017-26807.jpg');
     padding: 20px;
     display: flex;
     flex-direction: column;
