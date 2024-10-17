@@ -12,13 +12,14 @@ body, html {
 
 .left-half {
     width: 50%;
-    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQmZ-ZWKacmL3FPvLsgWwcYUtwfyIJpYAPkw&s ');
+    background-image: url('https://images.assettype.com/fortuneindia%2F2024-10-05%2F3assoigp%2FBiosimilars-2.jpg?w=1250&q=60');
     background-size: cover;
     background-position: center;
 }
 
 .right-half {
     width: 50%;
+    background-color:beige;
     padding: 20px;
     display: flex;
     flex-direction: column;
