@@ -8,7 +8,7 @@ app.secret_key = os.urandom(24)
 # Database connection details
 db_config = {
     'user': 'root',
-    'password': 'password',
+    'password': 'root',
     'host': 'localhost',
     'database': 'pharmacy_db'
 }
