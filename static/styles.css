@@ -67,12 +67,12 @@ p {
 }
 
 .login-container h2 {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     text-align: center;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 1px;
 }
 
 .form-group label {
