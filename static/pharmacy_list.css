@@ -1,0 +1,41 @@
+body {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    background-image: url('https://img.freepik.com/free-vector/medical-healthcare-blue-color_1017-26807.jpg');
+    background-size: cover;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color:skyblue;
+    border-radius: 8px;
+    box-shadow: 0 0 10px white;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    padding: 10px;
+    background-color: #e7f1ff;
+    margin: 5px 0;
+    border-radius: 5px;
+    font-size: 18px;
+    text-align: center;
+}
+
+ul li:hover {
+    background-color: #b8daff;
+    cursor: pointer;
+}

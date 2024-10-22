@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicines at {{ pharmacy_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/pharmacy_list.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Medicines Available at {{ pharmacy_name }}</h1>
+        <ul>
+            {% for medicine in medicines %}
+                <li>{{ medicine[0] }}</li>  <!-- Display the medicine name -->
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('login_customer') }}">Back to Pharmacies</a> <!-- Link to go back -->
+    </div>
+</body>
+</html>
