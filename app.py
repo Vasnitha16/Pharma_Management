@@ -28,7 +28,7 @@ def login_customer():
         password = request.form['password']
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM pharmacy WHERE username=%s AND password=%s AND role='customer'", (username, password))
+        cursor.execute("SELECT * FROM user_credentials WHERE username=%s AND password=%s ", (username, password))
         user = cursor.fetchone()
         cursor.close()
         connection.close()
@@ -45,7 +45,7 @@ def login_pharmacist():
         password = request.form['password']
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM pharmacy WHERE username=%s AND password=%s AND role='pharmacist'", (username, password))
+        cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s AND password=%s", (username, password))
         user = cursor.fetchone()
         cursor.close()
         connection.close()
@@ -62,7 +62,7 @@ def register_customer():
         password = request.form['password']
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO pharmacy (username, password, role) VALUES (%s, %s, %s)", (username, password, 'customer'))
+        cursor.execute("INSERT INTO user_credentials (username, password) VALUES (%s, %s)", (username, password))
         connection.commit()
         cursor.close()
         connection.close()
@@ -77,7 +77,7 @@ def register_pharmacist():
         password = request.form['password']
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO pharmacy (username, password, role) VALUES (%s, %s, %s)", (username, password, 'pharmacist'))
+        cursor.execute("INSERT INTO pharmacy_credentials (username, password) VALUES (%s, %s)", (username, password))
         connection.commit()
         cursor.close()
         connection.close()
