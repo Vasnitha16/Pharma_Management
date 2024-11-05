@@ -3,16 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicines - Pharmacy Database Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Medicine List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
+    <script>
+        function updateQuantity(medicineId, action) {
+            fetch(`/update_quantity/${medicineId}/${action}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
+                } else {
+                    alert('Failed to update quantity');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
-    <h2>Medicines available at {{ pharmacy_name }}</h2>
-    <ul>
+    <h1>Medicines Available at {{ pharmacy_name }}</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+        </tr>
         {% for medicine in medicines %}
-            <li>{{ medicine[0] }}</li>
+        <tr>
+            <td>{{ medicine[1] }}</td>
+            <td>{{ medicine[4] }}</td>
+            <td>{{ medicine[3] }}</td>
+            <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
+            <td>
+                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">+</button>
+                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">-</button>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-    <a href="{{ url_for('pharmacy_list') }}">Back to Pharmacies</a>
+    </table>
 </body>
 </html>
