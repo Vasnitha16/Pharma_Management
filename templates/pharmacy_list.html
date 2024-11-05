@@ -11,9 +11,9 @@
         <h1>Available Pharmacies</h1>
         <ul>
             {% for pharmacy in pharmacies %}
-                <li>{{ pharmacy[0] }}</li>  <!-- Pharmacy names are displayed here -->
+                <li><button type="button">{{ pharmacy[0] }}</button></li>
             {% endfor %}
-        </ul>
+        </ul>          
     </div>
 </body>
 </html>

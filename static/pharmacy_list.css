@@ -1,5 +1,5 @@
 body {
-    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@ body {
     max-width: 800px;
     margin: 50px auto;
     padding: 20px;
-    background-color:skyblue;
+    background-color: skyblue;
     border-radius: 8px;
     box-shadow: 0 0 10px white;
 }
@@ -24,18 +24,27 @@ h1 {
 ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 ul li {
-    padding: 10px;
-    background-color: #e7f1ff;
     margin: 5px 0;
+}
+
+ul li button {
+    width: 100%;
+    padding: 15px;
+    background-color: #e7f1ff;
+    border: none;
     border-radius: 5px;
     font-size: 18px;
     text-align: center;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-ul li:hover {
+ul li button:hover {
     background-color: #b8daff;
-    cursor: pointer;
 }
