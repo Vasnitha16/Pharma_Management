@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacies</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='pharmacy_list.css') }}">
+    <title>Pharmacies - Pharmacy Database Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Available Pharmacies</h1>
-        <ul>
-            {% for pharmacy in pharmacies %}
-                <li><button type="button">{{ pharmacy[0] }}</button></li>
-            {% endfor %}
-        </ul>          
-    </div>
+    <h2>Select a Pharmacy</h2>
+    <ul>
+        {% for pharmacy in pharmacies %}
+            <li><a href="{{ url_for('pharmacy_medicines', pharmacy_id=pharmacy[0]) }}">{{ pharmacy[1] }}</a></li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

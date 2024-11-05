@@ -42,25 +42,27 @@ def login_customer():
             connection.close()
     return render_template('login_customer.html')
 
-# Route to display medicines for a specific pharmacy
-@app.route('/pharmacy/<int:pharmacy_id>')
-def pharmacy_medicines(pharmacy_id):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT name FROM medicines WHERE pharmacy_id = %s", (pharmacy_id,))
-    medicines = cursor.fetchall()  # Fetch all medicines for the pharmacy
-    cursor.close()
-    connection.close()
+# # Route to display medicines for a specific pharmacy
+# @app.route('/pharmacy/<int:pharmacy_id>')
+# def pharmacy_medicines(pharmacy_id):
+#     connection = get_db_connection()
+#     cursor = connection.cursor()
+#     cursor.execute("SELECT name FROM medicines WHERE pharmacy_id = %s", (pharmacy_id,))
+#     medicines = cursor.fetchall()  # Fetch all medicines for the pharmacy
+#     cursor.close()
+#     connection.close()
 
-    # Fetch the pharmacy name
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT name FROM pharmacies WHERE id = %s", (pharmacy_id,))
-    pharmacy_name = cursor.fetchone()[0]
-    cursor.close()
-    connection.close()
+#     # Fetch the pharmacy name
+#     connection = get_db_connection()
+#     cursor = connection.cursor()
+#     cursor.execute("SELECT name FROM pharmacies WHERE id = %s", (pharmacy_id,))
+#     pharmacy_name = cursor.fetchone()[0]
+#     cursor.close()
+#     connection.close()
 
-    return render_template('medicine_list.html', medicines=medicines, pharmacy_name=pharmacy_name)
+#     return render_template('medicine_list.html', medicines=medicines, pharmacy_name=pharmacy_name)
+
+
 
 
 @app.route('/login_pharmacist', methods=['GET', 'POST'])
@@ -109,6 +111,25 @@ def register_pharmacist():
         flash('Pharmacist registration successful! You can now log in.')
         return redirect(url_for('login_pharmacist'))
     return render_template('register_pharmacist.html')
+
+@app.route('/pharmacy/<int:pharmacy_id>')
+def pharmacy_medicines(pharmacy_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM medicines WHERE pharmacy_id = %s", (pharmacy_id,))
+    medicines = cursor.fetchall()  # Fetch all medicines for the pharmacy
+    cursor.close()
+    connection.close()
+
+    # Fetch the pharmacy name
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM pharmacies WHERE id = %s", (pharmacy_id,))
+    pharmacy_name = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+
+    return render_template('medicine_list.html', medicines=medicines, pharmacy_name=pharmacy_name)
 
 if __name__ == '__main__':
     app.run(debug=True)
