@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Checkout</h1>
+    <table>
+        <tr>
+            <th>Medicine</th>
+            <th>Quantity Purchased</th>
+            <th>Price per Unit</th>
+            <th>Total</th>
+        </tr>
+        {% for item in purchased_items %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[1] * item[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Total Bill: {{ total_bill }}</h2>
+    <button onclick="window.location.href='/confirm_checkout'">Confirm Checkout</button>
+</body>
+</html>
