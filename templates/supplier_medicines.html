@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Medicines</title>
+</head>
+<body>
+    <h1>Medicines Provided by Supplier</h1>
+    <ul>
+        {% for medicine in medicines %}
+            <li>{{ medicine }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('supplier_list') }}">Back to Supplier List</a> <!-- Link back to suppliers -->
+</body>
+</html>
