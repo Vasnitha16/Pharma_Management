@@ -386,30 +386,44 @@ def pharmacy_medicines(pharmacy_id):
 
 @app.route('/update_quantity/<int:medicine_id>/<string:action>', methods=['POST'])
 def update_quantity(medicine_id, action):
-    # Track medicines added to the cart in the session
-    if 'cart' not in session:
-        session['cart'] = {}
+    # Get cart from session
+    cart = session.get('cart', {})
 
+    # Fetch medicine details from the database
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT name, price FROM medicines WHERE id = %s", (medicine_id,))
+    medicine = cursor.fetchone()
+    connection.close()
+
+    if not medicine:
+        return jsonify({'success': False, 'error': 'Medicine not found'}), 404
+
+    name, price = medicine
     if action == 'increment':
-        if medicine_id in session['cart']:
-            session['cart'][medicine_id]['quantity'] += 1
+        if medicine_id in cart:
+            cart[medicine_id]['quantity'] += 1
         else:
-            session['cart'][medicine_id] = {'quantity': 1}
+            cart[medicine_id] = {'name': name, 'quantity': 1, 'price': price}
 
     elif action == 'decrement':
-        if medicine_id in session['cart'] and session['cart'][medicine_id]['quantity'] > 0:
-            session['cart'][medicine_id]['quantity'] -= 1
-            if session['cart'][medicine_id]['quantity'] == 0:
-                del session['cart'][medicine_id]
+        if medicine_id in cart and cart[medicine_id]['quantity'] > 0:
+            cart[medicine_id]['quantity'] -= 1
+        else:
+            return jsonify({'success': False, 'error': 'Cannot decrement below zero'}), 400
 
-    session.modified = True
-    return jsonify({'success': True, 'cart': session['cart']})
+    session['cart'] = cart  # Update cart in session
+
+    return jsonify({'success': True, 'new_quantity': cart[medicine_id]['quantity']})
+
+
 
 @app.route('/calculate_bill', methods=['GET'])
 def calculate_bill():
     total_bill = 0
     purchased_items = []
-    
+
+    # Make sure there's a cart in the session
     if 'cart' in session:
         connection = get_db_connection()
         cursor = connection.cursor()
@@ -427,17 +441,53 @@ def calculate_bill():
 
     return jsonify({'total_bill': total_bill, 'purchased_items': purchased_items})
 
-@app.route('/checkout/<int:pharmacy_id>', methods=['GET'])
-def checkout(pharmacy_id):
-    # Here we could proceed with actual checkout logic, such as saving the order in a database.
-    session.pop('cart', None)  # Clear the cart after checkout
+
+@app.route('/cart', methods=['GET'])
+def view_cart():
+    # Retrieve the cart from the session
+    cart = session.get('cart', {})
+
+    # If cart is empty, show an appropriate message
+    if not cart:
+        flash('Your cart is empty.')
+        return render_template('cart.html', cart={}, total_bill=0.00)
+
+    total_bill = 0
+    purchased_items = []
+
+    # Iterate over the items in the cart to calculate the total bill
+    for item in cart.values():
+        try:
+            # Ensure that quantity and price are numbers
+            quantity = int(item['quantity'])  # Force integer conversion
+            price = float(item['price'])      # Force float conversion
+
+            total_bill += quantity * price
+            purchased_items.append({
+                'name': item['name'],
+                'quantity': quantity,
+                'price': price,
+                'total': quantity * price
+            })
+        except ValueError:
+            flash('There was an error processing your cart items.')
+            return redirect(url_for('about'))  # Redirect to a safe page
+
+    return render_template('cart.html', cart=purchased_items, total_bill=total_bill)
+
+
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    # Here, you could process the payment or order.
+    # After checkout, clear the cart.
+    session.pop('cart', None)
     flash('Checkout successful! Thank you for your purchase.')
-    return redirect(url_for('pharmacy_medicines', pharmacy_id=pharmacy_id))
+    return redirect(url_for('about'))  # Redirect to the "about" page or another relevant page
+
 
 @app.route('/logout')
 def logout():
-    session.pop('cart', None)  # Clear the cart on logout
-    return redirect(url_for('login_pharmacist'))
+    return redirect(url_for('login_customer'))
 
 if __name__ == '__main__':
     app.run(debug=True)

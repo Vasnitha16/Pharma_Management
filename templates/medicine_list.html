@@ -178,7 +178,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                calculateBill();
+                if (data.success) {
+                    // Update the UI with the new quantity
+                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
+                    calculateBill();
+                } else {
+                    alert('Failed to update quantity');
+                }
             });
         }
 
@@ -213,8 +219,8 @@
             <td>{{ medicine[3] }}</td>
             <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
             <td>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">+</button>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">-</button>
+                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">-</button>
+                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">+</button>
             </td>
         </tr>
         {% endfor %}
@@ -223,6 +229,6 @@
     <h2>Shopping Cart</h2>
     <ul id="purchased_items"></ul>
     <p id="total_bill">Total Bill: $0.00</p>
-    <button onclick="window.location.href='/checkout/{{ pharmacy_id }}'">Proceed to Checkout</button>
+    <button onclick="window.location.href='/cart'">Go to Cart</button>
 </body>
 </html>
