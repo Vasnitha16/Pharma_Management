@@ -273,6 +273,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 import mysql.connector
 import os
+from decimal import Decimal
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -384,6 +385,31 @@ def pharmacy_medicines(pharmacy_id):
 
     return render_template('medicine_list.html', medicines=medicines, pharmacy_name=pharmacy_name, pharmacy_id=pharmacy_id)
 
+@app.route('/suppliers')
+def supplier_list():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, name FROM suppliers")
+    suppliers = cursor.fetchall()
+    connection.close()
+    return render_template('supplier_list.html', suppliers=suppliers)
+
+@app.route('/supplier/<int:supplier_id>/medicines')
+def supplier_medicines(supplier_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT m.name
+        FROM medicines m
+        JOIN supplier_medicines sm ON m.id = sm.medicine_id
+        WHERE sm.supplier_id = %s
+
+    """
+    cursor.execute(query, (supplier_id,))
+    medicines = [row[0] for row in cursor.fetchall()]
+    connection.close()
+    return render_template('supplier_medicines.html', medicines=medicines)
+
 @app.route('/update_quantity/<int:medicine_id>/<string:action>', methods=['POST'])
 def update_quantity(medicine_id, action):
     # Get cart from session
@@ -415,32 +441,6 @@ def update_quantity(medicine_id, action):
     session['cart'] = cart  # Update cart in session
 
     return jsonify({'success': True, 'new_quantity': cart[medicine_id]['quantity']})
-
-
-
-@app.route('/calculate_bill', methods=['GET'])
-def calculate_bill():
-    total_bill = 0
-    purchased_items = []
-
-    # Make sure there's a cart in the session
-    if 'cart' in session:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        for medicine_id, details in session['cart'].items():
-            cursor.execute("SELECT name, price FROM medicines WHERE id = %s", (medicine_id,))
-            medicine = cursor.fetchone()
-            if medicine:
-                name, price = medicine
-                total_bill += price * details['quantity']
-                purchased_items.append([name, details['quantity'], price])
-
-        cursor.close()
-        connection.close()
-
-    return jsonify({'total_bill': total_bill, 'purchased_items': purchased_items})
-
 
 @app.route('/cart', methods=['GET'])
 def view_cart():
@@ -475,7 +475,6 @@ def view_cart():
 
     return render_template('cart.html', cart=purchased_items, total_bill=total_bill)
 
-
 @app.route('/checkout', methods=['POST'])
 def checkout():
     # Here, you could process the payment or order.
@@ -484,10 +483,33 @@ def checkout():
     flash('Checkout successful! Thank you for your purchase.')
     return redirect(url_for('about'))  # Redirect to the "about" page or another relevant page
 
+@app.route('/calculate_bill', methods=['GET'])
+def calculate_bill():
+    total_bill = 0
+    purchased_items = []
+
+    # Make sure there's a cart in the session
+    if 'cart' in session:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        for medicine_id, details in session['cart'].items():
+            cursor.execute("SELECT name, price FROM medicines WHERE id = %s", (medicine_id,))
+            medicine = cursor.fetchone()
+            if medicine:
+                name, price = medicine
+                total_bill += price * details['quantity']
+                purchased_items.append([name, details['quantity'], price])
+
+        cursor.close()
+        connection.close()
+
+    return jsonify({'total_bill': total_bill, 'purchased_items': purchased_items})
+
 
 @app.route('/logout')
 def logout():
-    return redirect(url_for('login_customer'))
+    return redirect(url_for('about'))
 
 if __name__ == '__main__':
     app.run(debug=True)

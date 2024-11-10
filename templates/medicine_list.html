@@ -164,7 +164,7 @@
 </body>
 </html> -->
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -225,6 +225,88 @@
         </tr>
         {% endfor %}
     </table>
+
+    <h2>Shopping Cart</h2>
+    <ul id="purchased_items"></ul>
+    <p id="total_bill">Total Bill: $0.00</p>
+    <button onclick="window.location.href='/cart'">Go to Cart</button>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
+    <script>
+        function updateQuantity(medicineId, action) {
+            fetch(`/update_quantity/${medicineId}/${action}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the UI with the new quantity
+                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
+                    updateCart(data.total_bill);  // Update cart and total bill
+                } else {
+                    alert('Failed to update quantity');
+                }
+            });
+        }
+
+        function updateCart(totalBill) {
+            // Update the shopping cart's total price in real-time
+            document.getElementById('total_bill').textContent = `Total Bill: $${totalBill.toFixed(2)}`;
+
+            // Fetch the cart items and update the cart UI
+            fetch('/cart')  // You may create an endpoint to fetch cart items if needed
+            .then(response => response.json())
+            .then(cartData => {
+                let cartItems = '';
+                cartData.items.forEach(item => {
+                    cartItems += `<li>${item.name}: ${item.quantity} x $${item.price}</li>`;
+                });
+                document.getElementById('purchased_items').innerHTML = cartItems;
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Medicines Available</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Actions</th>
+    </tr>
+    {% for medicine in medicines %}
+    <tr>
+        <td>{{ medicine[1] }}</td>
+        <td>{{ medicine[4] }}</td>
+        <td>{{ medicine[3] }}</td>
+        <td>
+            <!-- Display the current quantity of the medicine -->
+            <span id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</span>
+        </td>
+        <td>
+            <!-- Decrement Form -->
+            <form action="{{ url_for('update_quantity', medicine_id=medicine[0], action='decrement') }}" method="POST" style="display:inline;">
+                <button type="submit">-</button>
+            </form>
+            <!-- Increment Form -->
+            <form action="{{ url_for('update_quantity', medicine_id=medicine[0], action='increment') }}" method="POST" style="display:inline;">
+                <button type="submit">+</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 
     <h2>Shopping Cart</h2>
     <ul id="purchased_items"></ul>
