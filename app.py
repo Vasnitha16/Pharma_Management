@@ -320,21 +320,38 @@ def login_pharmacist():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        pharmacy_id = request.form['pharmacy_id']  # Ensure this is passed from the form
+
+        # Connect to the database
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s AND password=%s", (username, password))
+
+        # Query to check if the credentials are correct
+        cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s AND password=%s AND pharmacy_id=%s", (username, password, pharmacy_id))
         user = cursor.fetchone()
+
         if user:
-            cursor.execute("SELECT id, name FROM suppliers WHERE pharmacy_id = %s", (user[0],))  # Assuming `user[0]` is the pharmacist's ID
+            # Fetch suppliers associated with the given pharmacy_id
+            cursor.execute("SELECT id, name FROM suppliers WHERE pharmacy_id = %s", (pharmacy_id,))
             suppliers = cursor.fetchall()
+
+            # Debugging: Print the suppliers data to check if names are retrieved
+            print("Suppliers data:", suppliers)  # This will print a list of tuples (id, name)
+
+            # Close the database connections
             cursor.close()
             connection.close()
+
+            # Render the supplier list page with fetched suppliers
             return render_template('supplier_list.html', suppliers=suppliers)
         else:
-            flash('Invalid username or password')
+            flash('Invalid username, password, or pharmacy ID')
             cursor.close()
             connection.close()
+
     return render_template('login_pharmacist.html')
+
+
 
 @app.route('/register_customer', methods=['GET', 'POST'])
 def register_customer():
@@ -356,15 +373,42 @@ def register_pharmacist():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        pharmacy_id = request.form['pharmacy_id']
+
+        # Establish a database connection
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO pharmacy_credentials (username, password) VALUES (%s, %s)", (username, password))
-        connection.commit()
+
+        # Check if the pharmacy ID exists in the pharmacies table
+        cursor.execute("SELECT * FROM pharmacies WHERE id = %s", (pharmacy_id,))
+        pharmacy = cursor.fetchone()
+
+        if not pharmacy:
+            flash('Invalid Pharmacy ID. Please check and try again.')
+        else:
+            # Check if the username already exists
+            cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s", (username,))
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+                flash('Username already exists')
+            else:
+                # Insert new pharmacist into pharmacy_credentials table with plain text password
+                cursor.execute("""
+                    INSERT INTO pharmacy_credentials (username, password, pharmacy_id)
+                    VALUES (%s, %s, %s)
+                """, (username, password, pharmacy_id))
+                connection.commit()
+
+                flash('Registration successful! Please log in.')
+
         cursor.close()
         connection.close()
-        flash('Pharmacist registration successful! You can now log in.')
+
         return redirect(url_for('login_pharmacist'))
+
     return render_template('register_pharmacist.html')
+
 
 @app.route('/pharmacy/<int:pharmacy_id>')
 def pharmacy_medicines(pharmacy_id):
@@ -399,11 +443,11 @@ def supplier_medicines(supplier_id):
     connection = get_db_connection()
     cursor = connection.cursor()
     query = """
-        SELECT m.name
+        SELECT m.id, m.name, m.quantity, m.price, m.description 
         FROM medicines m
-        JOIN supplier_medicines sm ON m.id = sm.medicine_id
-        WHERE sm.supplier_id = %s
-
+        JOIN suppliers s ON m.id = s.medicine_id
+        JOIN pharmacies p ON s.pharmacy_id = p.id
+        WHERE s.id = %s
     """
     cursor.execute(query, (supplier_id,))
     medicines = [row[0] for row in cursor.fetchall()]

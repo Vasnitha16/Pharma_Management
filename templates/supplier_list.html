@@ -3,42 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pharmacy_list.css') }}">
     <title>Supplier List</title>
-    <style>
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .supplier-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            font-size: 16px;
-            margin: 10px 0;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .supplier-button:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
-    <h1>List of Suppliers</h1>
+    <h1>Suppliers for Your Pharmacy</h1>
     <ul>
         {% for supplier in suppliers %}
-            <li>
-                <!-- Link each button to the route that displays medicines for the selected supplier -->
-                <a href="{{ url_for('supplier_medicines', supplier_id=supplier[0]) }}" class="supplier-button">
-                    {{ supplier[1] }}
-                </a>
-            </li>
+            <li>{{ supplier[1] if supplier[1] else 'No name provided' }} (ID: {{ supplier[0] }})</li>
+        {% else %}
+            <li>No suppliers found for this pharmacy.</li>
         {% endfor %}
     </ul>
-    <a href="/logout">Logout</a>
 </body>
 </html>
