@@ -331,8 +331,12 @@ def login_pharmacist():
         user = cursor.fetchone()
 
         if user:
-            # Fetch suppliers associated with the given pharmacy_id
-            cursor.execute("SELECT id, name FROM suppliers WHERE pharmacy_id = %s", (pharmacy_id,))
+            # Fetch distinct suppliers associated with the given pharmacy_id
+            cursor.execute("""
+                SELECT DISTINCT  suppliers.name 
+                FROM suppliers 
+                WHERE pharmacy_id = %s
+            """, (pharmacy_id,))
             suppliers = cursor.fetchall()
 
             # Debugging: Print the suppliers data to check if names are retrieved
@@ -350,8 +354,6 @@ def login_pharmacist():
             connection.close()
 
     return render_template('login_pharmacist.html')
-
-
 
 @app.route('/register_customer', methods=['GET', 'POST'])
 def register_customer():
@@ -549,6 +551,8 @@ def calculate_bill():
         connection.close()
 
     return jsonify({'total_bill': total_bill, 'purchased_items': purchased_items})
+
+
 
 
 @app.route('/logout')
