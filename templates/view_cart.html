@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .cart-item {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .cart-item p {
+            margin: 10px 0;
+        }
+        .quantity-input {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+        }
+        .update-btn {
+            padding: 5px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .update-btn:hover {
+            background-color: #45a049;
+        }
+        .checkout-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .checkout-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Your Cart</h1>
+
+    <div class="cart-items-list">
+        {% for item in cart_items %}
+            <div class="cart-item" id="cart-item-{{ item.medicine_id }}">
+                <h3>{{ item.name }}</h3>
+                <p><strong>Price:</strong> ${{ item.price }}</p>
+                <p><strong>Current Quantity:</strong>
+                    <input type="number" class="quantity-input" value="{{ item.quantity }}" id="quantity-{{ item.medicine_id }}" min="1" />
+                </p>
+                <button class="update-btn" onclick="updateQuantity({{ item.medicine_id }})">Update Quantity</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+
+    <script>
+        function updateQuantity(medicineId) {
+            var newQuantity = document.getElementById(`quantity-${medicineId}`).value;
+
+            if (newQuantity <= 0) {
+                alert("Quantity must be a positive number.");
+                return;
+            }
+
+            fetch(`/update_quantity/${medicineId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Quantity updated successfully!");
+                    document.getElementById(`quantity-${medicineId}`).value = newQuantity;
+                } else {
+                    alert("Failed to update quantity.");
+                }
+            });
+        }
+
+        function checkout() {
+            let cartItems = [];
+            document.querySelectorAll('.cart-item').forEach(item => {
+                let medicineId = item.id.replace('cart-item-', '');
+                let quantity = document.getElementById(`quantity-${medicineId}`).value;
+                cartItems.push({
+                    medicine_id: medicineId,
+                    quantity: quantity
+                });
+            });
+
+            fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ items: cartItems })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "/billing";
+                } else {
+                    alert("Checkout failed. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during checkout.');
+            });
+        }
+    </script>
+
+</body>
+</html>

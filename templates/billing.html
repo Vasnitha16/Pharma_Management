@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .total-price {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .logout-btn {
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Billing Page</h1>
+
+    <div class="total-price">
+        <p><strong>Total Price: ${{ total_price }}</strong></p>
+    </div>
+
+    <form action="/logout" method="POST">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+
+    <form action="/login_customer" method="GET">
+        <button type="submit" class="login-btn">Login to another user</button>
+    </form>
+
+</body>
+</html>

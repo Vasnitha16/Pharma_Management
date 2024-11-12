@@ -10,7 +10,7 @@
     <h2>LISTS OF PHARMACIES</h2>
     <ul>
         {% for pharmacy in pharmacies %}
-            <li><a href="{{ url_for('pharmacy_medicines', pharmacy_id=pharmacy[0]) }}">{{ pharmacy[1] }}</a></li>
+            <li><a href="{{ url_for('pharmacy_medicines', pharmacy_id=pharmacy['id']) }}">{{ pharmacy['name'] }}</a></li>
         {% endfor %}
     </ul>
 </body>

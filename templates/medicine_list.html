@@ -1,234 +1,88 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
-    <script>
-        function updateQuantity(medicineId, action) {
-            fetch(`/update_quantity/${medicineId}/${action}`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
-                } else {
-                    alert('Failed to update quantity');
-                }
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>Medicines Available at {{ pharmacy_name }}</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        {% for medicine in medicines %}
-        <tr>
-            <td>{{ medicine[1] }}</td>
-            <td>{{ medicine[4] }}</td>
-            <td>{{ medicine[3] }}</td>
-            <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
-            <td>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">+</button>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">-</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <button onclick="window.location.href='/checkout/{{ pharmacy_id }}'">Checkout</button>
-</body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
-    <script>
-        function updateQuantity(medicineId, action) {
-            fetch(`/update_quantity/${medicineId}/${action}`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
-                } else {
-                    alert('Failed to update quantity');
-                }
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>Medicines Available at {{ pharmacy_name }}</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        {% for medicine in medicines %}
-        <tr>
-            <td>{{ medicine[1] }}</td>
-            <td>{{ medicine[4] }}</td>
-            <td>{{ medicine[3] }}</td>
-            <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
-            <td>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">+</button>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">-</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <button onclick="window.location.href='/checkout/{{ pharmacy_id }}'">Checkout</button>
-</body>
-</html> --> 
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
-    <script>
-        function updateQuantity(medicineId, action) {
-            fetch(`/update_quantity/${medicineId}/${action}`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
-                    calculateBill();
-                } else {
-                    alert('Failed to update quantity');
-                }
-            });
-        }
-
-        function calculateBill() {
-            fetch('/calculate_bill')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('total_bill').textContent = `Total Bill: $${data.total_bill.toFixed(2)}`;
-                let purchasedItems = '';
-                data.purchased_items.forEach(item => {
-                    purchasedItems += `<li>${item[0]}: ${item[1]} x $${item[2]}</li>`;
-                });
-                document.getElementById('purchased_items').innerHTML = purchasedItems;
-            });
-        }
-    </script>
-</head>
-<body>
-    <h1>Medicines Available at {{ pharmacy_name }}</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        {% for medicine in medicines %}
-        <tr>
-            <td>{{ medicine[1] }}</td>
-            <td>{{ medicine[4] }}</td>
-            <td>{{ medicine[3] }}</td>
-            <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
-            <td>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">+</button>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">-</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <h2 id="total_bill">Total Bill: $0.00</h2>
-    <ul id="purchased_items"></ul>
-    <button onclick="window.location.href='/checkout/{{ pharmacy_id }}'">Checkout</button>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medicine List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .medicine {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .medicine h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .medicine p {
+            margin: 10px 0;
+        }
+        .medicine button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .medicine button:hover {
+            background-color: #45a049;
+        }
+        .view-cart-btn {
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .view-cart-btn:hover {
+            background-color: #007B9E;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Medicines Available at {{ pharmacy_name }}</h1>
+    
+    <div class="medicines-list">
+        {% for medicine in medicines %}
+            <div class="medicine">
+                <h3>{{ medicine.name }}</h3>
+                <p><strong>Price:</strong> ${{ medicine.price }}</p>
+                <p><strong>Available Quantity:</strong> <span id="quantity-{{ medicine.id }}">{{ medicine.quantity }}</span></p>
+                <button onclick="addToCart({{ medicine.id }})">Add to Cart</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button class="view-cart-btn" onclick="window.location.href='/view_cart'">View Cart</button>
+
     <script>
-        function updateQuantity(medicineId, action) {
-            fetch(`/update_quantity/${medicineId}/${action}`, {
+        function addToCart(medicineId) {
+            fetch(`/add_to_cart/${medicineId}`, {
                 method: 'POST'
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update the UI with the new quantity
-                    document.getElementById(`quantity-${medicineId}`).textContent = data.new_quantity;
-                    calculateBill();
+                    alert("Medicine added to cart!");
+                    // Optionally, update the available quantity on the page
+                    let quantityElement = document.getElementById(`quantity-${medicineId}`);
+                    let currentQuantity = parseInt(quantityElement.innerText);
+                    quantityElement.innerText = currentQuantity - 1; // Decrease available quantity by 1
                 } else {
-                    alert('Failed to update quantity');
+                    alert("Failed to add medicine to cart.");
                 }
             });
         }
-
-        function calculateBill() {
-            fetch('/calculate_bill')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('total_bill').textContent = `Total Bill: $${data.total_bill.toFixed(2)}`;
-                let purchasedItems = '';
-                data.purchased_items.forEach(item => {
-                    purchasedItems += `<li>${item[0]}: ${item[1]} x $${item[2]}</li>`;
-                });
-                document.getElementById('purchased_items').innerHTML = purchasedItems;
-            });
-        }
     </script>
-</head>
-<body>
-    <h1>Medicines Available at {{ pharmacy_name }}</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        {% for medicine in medicines %}
-        <tr>
-            <td>{{ medicine[1] }}</td>
-            <td>{{ medicine[4] }}</td>
-            <td>{{ medicine[3] }}</td>
-            <td id="quantity-{{ medicine[0] }}">{{ medicine[2] }}</td>
-            <td>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'decrement')">-</button>
-                <button onclick="updateQuantity({{ medicine[0] }}, 'increment')">+</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
 
-    <h2>Shopping Cart</h2>
-    <ul id="purchased_items"></ul>
-    <p id="total_bill">Total Bill: $0.00</p>
-    <button onclick="window.location.href='/cart'">Go to Cart</button>
 </body>
 </html>
