@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Customer - Pharmacy Database Management System</title>
+    <title>Register Pharmacist</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
     <div class="center-container">
         <div class="content">
-            <!-- Left side (Image) -->
             <div class="left-side">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Register Customer Image">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Illustration">
             </div>
-
-            <!-- Right side (Registration form) -->
             <div class="right-side">
-                <div class="login-form">
-                    <h1>Register Pharmacist</h1>
-                    <h2>Create your account</h2>
+                <div class="register-form">
+                    <h1>Create a New Account</h1>
                     <form action="/register_pharmacist" method="post">
                         <div class="form-group">
                             <label for="username">Username</label>
@@ -28,11 +24,15 @@
                             <label for="password">Password</label>
                             <input type="password" id="password" name="password" required>
                         </div>
+                        <div class="form-group">
+                            <label for="pharmacy_id">Pharmacy ID</label>
+                            <input type="text" id="pharmacy_id" name="pharmacy_id" required>
+                        </div>
                         <div class="actions">
                             <button type="submit">Register</button>
                         </div>
                     </form>
-                    <p>Already have an account? <a href="/login_pharmacist">Login here</a></p>
+                    <p><a href="/login_pharmacist">Already have an account? Login here</a></p>
                 </div>
             </div>
         </div>

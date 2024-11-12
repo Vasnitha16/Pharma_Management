@@ -1,0 +1,62 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Medicines</title>
+</head>
+<body>
+    <h1>Medicines Provided by Supplier</h1>
+    <ul>
+        {% for medicine in medicines %}
+            <li>{{ medicine }}</li>
+        {% endfor %}
+    </ul>
+    
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicines Available</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='medicine_list.css') }}">
+</head>
+<body>
+    {% for supplier in suppliers %}
+    <h1>Medicines Available at {{supplier.name }}</h1>
+    {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+            <tr>
+                <td>{{ medicine[1] }}</td>  <!-- Name -->
+                <td>{{ medicine[4] }}</td>  <!-- Description -->
+                <td>{{ medicine[3] }}</td>  <!-- Price -->
+                <td>{{ medicine[2] }}</td>  <!-- Quantity -->
+                <td class="actions">
+                    <button class="remove">-</button>
+                    <button class="add">+</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+    <h2>Shopping Cart</h2>
+    <!-- Add your shopping cart section here if needed -->
+
+</body>
+</html>
