@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session,flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import mysql.connector
-import sqlite3
 
 import os
 
@@ -27,7 +26,25 @@ def execute_query(query, params=None):
     cursor.close()
     conn.close()
 
+# Function to fetch all results
+def fetch_all(query, params=None):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(query, params)
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
 
+# Function to fetch one result
+def fetch_one(query, params=None):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return result
 
 @app.route('/')
 def about():
@@ -62,7 +79,6 @@ def register_customer():
         return redirect(url_for('login_customer'))
     return render_template('register_customer.html')
 
-# Pharmacist routes
 @app.route('/login_pharmacist', methods=['GET', 'POST'])
 def login_pharmacist():
     if request.method == 'POST':
@@ -127,7 +143,6 @@ def register_pharmacist():
 
     return render_template('register_pharmacist.html')
 
-
 # Route to display the list of pharmacies
 @app.route('/pharmacy_list')
 def pharmacy_list():
@@ -142,6 +157,8 @@ def pharmacy_medicines(pharmacy_id):
     medicines = fetch_all(query, (pharmacy_id,))
     pharmacy_query = "SELECT * FROM pharmacies WHERE id = %s"
     pharmacy = fetch_one(pharmacy_query, (pharmacy_id,))
+    if pharmacy:
+            session['pharmacy_id'] = pharmacy['id']  # Store user ID in session
     return render_template('medicine_list.html', medicines=medicines, pharmacy_name=pharmacy['name'], pharmacy_id=pharmacy_id)
 
 @app.route('/add_to_cart/<int:medicine_id>', methods=['POST'])
@@ -151,6 +168,8 @@ def add_to_cart(medicine_id):
     # Check if the medicine is already in the cart for this user
     query = "SELECT * FROM cart WHERE user_id = %s AND medicine_id = %s"
     existing_item = fetch_one(query, (user_id, medicine_id))
+    if existing_item:
+        session['medicine_id']=existing_item['medicine_id']
 
     if existing_item:
         # If the medicine is already in the cart, just increment the quantity
@@ -263,13 +282,40 @@ def logout():
     return redirect(url_for('login_customer'))
 
 
+# @app.route('/billing')
+# def billing():
+#     # Retrieve the total price from the session
+#     user_id = session.get('user_id')
+
+#     total_price = session.get('total_price', 0.0)
+#     print(f"Received Total Price from session: {total_price}")  # Debug log
+#     pharmacy_id = session.get('pharmacy_id')
+#     query = "INSERT INTO bills (user_id, medicine_id,pharmacy_id total_price) VALUES (%s, %s, %d)"
+#     execute_query(query, (user_id,pharmacy_id,total_price))
+
+#     return render_template('billing.html', total_price=total_price)
+
 @app.route('/billing')
 def billing():
+    user_id = session.get('user_id')
+    pharmacy_id = session.get('pharmacy_id')
+
     # Retrieve the total price from the session
     total_price = session.get('total_price', 0.0)
     print(f"Received Total Price from session: {total_price}")  # Debug log
 
+    # Assuming cart_items are stored in the session as in previous logic
+    cart_items = session.get('cart_items', [])
+
+    # Insert billing data into bills table
+    for item in cart_items:
+        medicine_id = item['medicine_id']
+        quantity = item['quantity']
+        query = "INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price) VALUES (%s, %s, %s, %s, %s)"
+        execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
+
     return render_template('billing.html', total_price=total_price)
+
 
 @app.route('/supplier_list')
 def show_suppliers():
@@ -283,31 +329,10 @@ def show_suppliers():
 def supplier_medicines(supplier_id):
     query = "SELECT * FROM medicines WHERE supplier_id = %s"
     medicines = fetch_all(query, (supplier_id,))
-    print(medicines)  # Debugging: Check the format of `medicines`
+    print(medicines)  # Debugging: Check the format of medicines
     supplier = fetch_one("SELECT * FROM suppliers WHERE id = %s", (supplier_id,))
     return render_template('supplier_medicines.html', medicines=medicines, supplier_name=supplier['name'])
 
-def fetch_all(query, params=None):
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)  # Ensure we get dictionary results
-    cursor.execute(query, params)
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return result
-
-# Function to fetch one result as a dictionary
-def fetch_one(query, params=None):
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)  # Ensure we get dictionary results
-    cursor.execute(query, params)
-    result = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return result
-
-def execute_query(query, params=None):
-    pass
 
 @app.route('/increment_quantity/<int:medicine_id>', methods=['POST'])
 def increment_quantity(medicine_id):
@@ -328,7 +353,7 @@ def increment_quantity(medicine_id):
         cursor.close()
         connection.close()
 
-    return {'new_quantity': new_quantity} 
+    return {'new_quantity': new_quantity}
 
 if __name__ == '__main__':
     app.run(debug=True)
