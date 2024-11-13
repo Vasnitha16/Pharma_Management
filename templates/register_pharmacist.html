@@ -10,32 +10,34 @@
     <div class="center-container">
         <div class="content">
             <div class="left-side">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Illustration">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Register Customer Image">
             </div>
             <div class="right-side">
-                <div class="register-form">
-                    <h1>Create a New Account</h1>
-                    <form action="/register_pharmacist" method="post">
+                <div class="login-form">
+                    <h1>Register Customer</h1>
+                    <h2>Create your account</h2>
+                    <form action="{{ url_for('register_pharmacist') }}" method="POST">
                         <div class="form-group">
-                            <label for="username">Username</label>
+                            <label for="username">Username:</label>
                             <input type="text" id="username" name="username" required>
                         </div>
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            <label for="password">Password:</label>
                             <input type="password" id="password" name="password" required>
                         </div>
                         <div class="form-group">
-                            <label for="pharmacy_id">Pharmacy ID</label>
+                            <label for="pharmacy_id">Pharmacy ID:</label>
                             <input type="text" id="pharmacy_id" name="pharmacy_id" required>
                         </div>
                         <div class="actions">
                             <button type="submit">Register</button>
                         </div>
                     </form>
-                    <p><a href="/login_pharmacist">Already have an account? Login here</a></p>
+                    <p>Already have an account? <a href="{{ url_for('login_pharmacist') }}">Back to Login</a></p>
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+

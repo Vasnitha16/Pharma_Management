@@ -1,53 +1,72 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier List for Pharmacy {{ pharmacy_id }}</title>
+</head>
+<body>
+    <h1>Supplier List for Pharmacy ID: {{ pharmacy_id }}</h1>
+    
+    <ul>
+        {% for supplier in suppliers %}
+            <li>{{ supplier.name }} - Supplier ID: {{ supplier.id }}</li>
+        {% endfor %}
+    </ul>
+    
+    {% if suppliers|length == 0 %}
+        <p>No suppliers found for this pharmacy.</p>
+    {% endif %}
+</body>
+</html> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supplier List</title>
+    <title>Supplier List for Pharmacy {{ pharmacy_id }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='pharmacy_list.css') }}">
     <style>
-        /* Square Button Styling */
-    button {
-            display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 200px;  /* Increased width */
-        height: 200px; /* Increased height */
-        background-color: #007BFF;
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-        text-align: center;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s;
-    }
-
-        button:hover {
-            background-color: #0056b3; /* Change background on hover */
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #0056b3;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 4px #999;
+            margin: 5px 0;
         }
-
-    
-
-        /* Optional: Style the list items and button text */
-        li {
-            list-style: none;
+        
+        .button:hover {background-color: #0056b3}
+        
+        .button:active {
+            background-color: #0056b3;
+            transform: translateY(2px);
         }
     </style>
 </head>
 <body>
-    <h1>Suppliers for Your Pharmacy</h1>
+    <h1>Supplier List for Pharmacy ID: {{ pharmacy_id }}</h1>
+    
     <ul>
-        {% if suppliers %}
-            {% for supplier in suppliers %}
-                <li>
-                    <!-- Square button to click and view medicines -->
-                    <button onclick="window.location.href='/medicines/{{ supplier[1] }}'">{{ supplier[0] if supplier[0] else 'No name provided' }}</button>
-                </li>
-            {% endfor %}
-        {% else %}
-            <li>No suppliers found for this pharmacy.</li>
-        {% endif %}
+        {% for supplier in suppliers %}
+            <li>
+                <form action="{{ url_for('supplier_medicines', supplier_id=supplier['id']) }}" method="get">
+                    <button type="submit" class="button">{{ supplier.name }}</button>
+                </form>
+            </li>
+        {% endfor %}
     </ul>
+    
+    {% if suppliers|length == 0 %}
+        <p>No suppliers found for this pharmacy.</p>
+    {% endif %}
 </body>
 </html>
+
+
