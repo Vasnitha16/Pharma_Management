@@ -13,29 +13,91 @@
             <li id="medicine-{{ medicine.id }}">
                 <div>
                     <strong>{{ medicine.name }}</strong><br>
-                    <span class="quantity">Quantity we have: <span id="quantity-{{ medicine.id }}">{{ medicine.quantity }}</span></span>
+                    <span class="quantity">Available Quantity: <span id="quantity-{{ medicine.id }}">{{ medicine.quantity }}</span></span><br>
+                    <span class="price">Price per unit: $<span id="price-{{ medicine.id }}">{{ medicine.price }}</span></span>
                 </div>
-                <button onclick="incrementQuantity({{ medicine.id }})">+</button>
+                <label for="quantity-needed-{{ medicine.id }}">Quantity Needed:</label>
+                <input type="number" id="quantity-needed-{{ medicine.id }}" min="1" max="{{ medicine.quantity }}" placeholder="Enter quantity needed">
+                <button onclick="addToBill({{ medicine.id }})">Add to Bill</button>
             </li>
         {% else %}
             <li>No medicines found for this supplier.</li>
         {% endfor %}
     </ul>
 
+    <h2>Generated Bill</h2>
+    <div id="bill-container">
+        <p>No items added to the bill yet.</p>
+    </div>
+
     <script>
-        function incrementQuantity(medicineId) {
-            fetch(`/increment_quantity/${medicineId}`, {
+        let billItems = [];
+
+        function addToBill(medicineId) {
+            const quantityNeeded = parseInt(document.getElementById(`quantity-needed-${medicineId}`).value);
+            const availableQuantityElement = document.getElementById(`quantity-${medicineId}`);
+            const availableQuantity = parseInt(availableQuantityElement.innerText);
+            const pricePerUnit = parseFloat(document.getElementById(`price-${medicineId}`).innerText);
+
+            // Check if the input quantity is valid
+            if (quantityNeeded > availableQuantity || quantityNeeded <= 0) {
+                alert("Invalid quantity! Please enter a value within the available range.");
+                return;
+            }
+
+            // Add item to the bill array
+            const totalCost = quantityNeeded * pricePerUnit;
+            billItems.push({ name: document.getElementById('medicine-' + medicineId).querySelector('strong').innerText, quantity: quantityNeeded, price: pricePerUnit, total: totalCost });
+
+            // Update bill display
+            displayBill();
+
+            // Send this data to the server for further processing
+            fetch(`/generate_bill/${medicineId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ quantity_needed: quantityNeeded })
             })
             .then(response => response.json())
             .then(data => {
-                // Update the quantity displayed on the page
-                document.getElementById(`quantity-${medicineId}`).innerText = data.new_quantity;
+                // Update available quantity in the UI after server response
+                const newQuantity = data.new_quantity;
+                availableQuantityElement.innerText = newQuantity;
+
+                // Optionally disable input and button if quantity is zero
+                if (newQuantity <= 0) {
+                    document.getElementById(`quantity-needed-${medicineId}`).disabled = true;
+                    document.querySelector(`#medicine-${medicineId} button`).disabled = true;
+                } else {
+                    // Enable the input field if there are remaining quantities
+                    document.getElementById(`quantity-needed-${medicineId}`).disabled = false;
+                    document.querySelector(`#medicine-${medicineId} button`).disabled = false;
+                }
             })
             .catch(error => console.error('Error:', error));
+        }
+
+        function displayBill() {
+            let billHtml = '<ul>';
+            let totalBillAmount = 0;
+
+            billItems.forEach(item => {
+                billHtml += `
+                    <li>
+                        ${item.name} - ${item.quantity} unit(s) x $${item.price.toFixed(2)} = $${item.total.toFixed(2)}
+                    </li>
+                `;
+                totalBillAmount += item.total;
+            });
+
+            billHtml += `
+                </ul>
+                <p><strong>Total Bill Amount: $${totalBillAmount.toFixed(2)}</strong></p>
+            `;
+
+            document.getElementById('bill-container').innerHTML = billHtml;
         }
     </script>
 </body>

@@ -218,6 +218,7 @@ def update_quantity(medicine_id):
 @app.route('/checkout', methods=['POST'])
 def checkout():
     user_id = session.get('user_id')
+    pharmacy_id = session.get('pharmacy_id')
     if not user_id:
         return redirect(url_for('login_customer'))  # Redirect to login if not logged in
 
@@ -244,6 +245,18 @@ def checkout():
 
     # Store the total price in the session
     session['total_price'] = total_price
+    # Insert billing data into bills table
+    for item in cart_items:
+        try:
+            medicine_id = item['medicine_id']
+            quantity = item['quantity']
+            query = """
+            INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+            execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
+        except Exception as e:
+            print(f"Error inserting bill: {e}")
 
     # Redirect to billing page
     return redirect(url_for('billing'))
@@ -307,6 +320,7 @@ def billing():
     # Assuming cart_items are stored in the session as in previous logic
     cart_items = session.get('cart_items', [])
 
+<<<<<<< HEAD
     # # Insert billing data into bills table
     # for item in cart_items:
     #     medicine_id = item['medicine_id']
@@ -314,6 +328,20 @@ def billing():
     #     query = "INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price) VALUES (%s, %s, %s, %s, %s)"
     #     execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
 
+=======
+    # Insert billing data into bills table
+    for item in cart_items:
+        try:
+            medicine_id = item['medicine_id']
+            quantity = item['quantity']
+            query = """
+            INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+            execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
+        except Exception as e:
+            print(f"Error inserting bill: {e}")
+>>>>>>> 18ae18b9c207c798c51892ecb7dbb6298521604b
     return render_template('billing.html', total_price=total_price)
 
 
@@ -333,6 +361,29 @@ def supplier_medicines(supplier_id):
     supplier = fetch_one("SELECT * FROM suppliers WHERE id = %s", (supplier_id,))
     return render_template('supplier_medicines.html', medicines=medicines, supplier_name=supplier['name'])
 
+<<<<<<< HEAD
+=======
+def fetch_all(query, params=None):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)  # Ensure we get dictionary results
+    cursor.execute(query, params)
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
+
+# Function to fetch one result as a dictionary
+def fetch_one(query, params=None):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)  # Ensure we get dictionary results
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return result
+
+
+>>>>>>> 18ae18b9c207c798c51892ecb7dbb6298521604b
 
 @app.route('/increment_quantity/<int:medicine_id>', methods=['POST'])
 def increment_quantity(medicine_id):
@@ -354,6 +405,70 @@ def increment_quantity(medicine_id):
         connection.close()
 
     return {'new_quantity': new_quantity}
+
+
+@app.route('/supplier/<int:supplier_id>/medicines')
+def show_medicines(supplier_id):
+    # Establish MySQL connection
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor(dictionary=True)
+
+    # Query to get medicines from the database
+    query = "SELECT id, name, quantity, price FROM medicines WHERE supplier_id = %s"
+    cursor.execute(query, (supplier_id,))
+    medicines = cursor.fetchall()
+
+    # Close the database connection
+    cursor.close()
+    connection.close()
+
+    return render_template('medicines.html', supplier_name="Supplier Example", medicines=medicines)
+
+
+@app.route('/generate_bill/<int:medicine_id>', methods=['POST'])
+def generate_bill(medicine_id):
+    data = request.get_json()
+    quantity_needed = data['quantity_needed']
+
+    # Create a database connection
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Fetch the current available quantity of the medicine
+        cursor.execute("SELECT * FROM medicines WHERE id = %s", (medicine_id,))
+        medicine = cursor.fetchone()
+
+        if not medicine:
+            return jsonify({"error": "Medicine not found"}), 404
+
+        # Check if enough stock is available
+        if medicine['quantity'] < quantity_needed:
+            return jsonify({"error": "Not enough stock"}), 400
+
+        # Deduct the quantity
+        new_quantity = medicine['quantity'] - quantity_needed
+
+        # Update the quantity in the database
+        cursor.execute(
+            "UPDATE medicines SET quantity = %s WHERE id = %s", 
+            (new_quantity, medicine_id)
+        )
+
+        # Commit the transaction to the database
+        conn.commit()
+
+        return jsonify({"new_quantity": new_quantity, "message": "Bill generated successfully!"})
+
+    except mysql.connector.Error as err:
+        # Rollback the transaction in case of error
+        conn.rollback()
+        return jsonify({"error": f"Database error: {err}"}), 500
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
