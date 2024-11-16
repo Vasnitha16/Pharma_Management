@@ -307,12 +307,12 @@ def billing():
     # Assuming cart_items are stored in the session as in previous logic
     cart_items = session.get('cart_items', [])
 
-    # Insert billing data into bills table
-    for item in cart_items:
-        medicine_id = item['medicine_id']
-        quantity = item['quantity']
-        query = "INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price) VALUES (%s, %s, %s, %s, %s)"
-        execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
+    # # Insert billing data into bills table
+    # for item in cart_items:
+    #     medicine_id = item['medicine_id']
+    #     quantity = item['quantity']
+    #     query = "INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price) VALUES (%s, %s, %s, %s, %s)"
+    #     execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
 
     return render_template('billing.html', total_price=total_price)
 
