@@ -297,15 +297,28 @@ def logout():
 
 # @app.route('/billing')
 # def billing():
-#     # Retrieve the total price from the session
 #     user_id = session.get('user_id')
+#     pharmacy_id = session.get('pharmacy_id')
 
+#     # Retrieve the total price from the session
 #     total_price = session.get('total_price', 0.0)
 #     print(f"Received Total Price from session: {total_price}")  # Debug log
-#     pharmacy_id = session.get('pharmacy_id')
-#     query = "INSERT INTO bills (user_id, medicine_id,pharmacy_id total_price) VALUES (%s, %s, %d)"
-#     execute_query(query, (user_id,pharmacy_id,total_price))
 
+#     # Assuming cart_items are stored in the session as in previous logic
+#     cart_items = session.get('cart_items', [])
+
+#     # Insert billing data into bills table
+#     for item in cart_items:
+#         try:
+#             medicine_id = item['medicine_id']
+#             quantity = item['quantity']
+#             query = """
+#             INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price)
+#             VALUES (%s, %s, %s, %s, %s)
+#         """
+#             execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
+#         except Exception as e:
+#             print(f"Error inserting bill: {e}")
 #     return render_template('billing.html', total_price=total_price)
 
 @app.route('/billing')
@@ -320,28 +333,16 @@ def billing():
     # Assuming cart_items are stored in the session as in previous logic
     cart_items = session.get('cart_items', [])
 
-<<<<<<< HEAD
-    # # Insert billing data into bills table
-    # for item in cart_items:
-    #     medicine_id = item['medicine_id']
-    #     quantity = item['quantity']
-    #     query = "INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price) VALUES (%s, %s, %s, %s, %s)"
-    #     execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
-
-=======
-    # Insert billing data into bills table
+    # Insert billing data into bills table using the stored procedure
     for item in cart_items:
         try:
             medicine_id = item['medicine_id']
             quantity = item['quantity']
-            query = """
-            INSERT INTO bills (user_id, medicine_id, pharmacy_id, quantity, total_price)
-            VALUES (%s, %s, %s, %s, %s)
-        """
+            query = "CALL InsertBill(%s, %s, %s, %s, %s)" #Storred procedure
             execute_query(query, (user_id, medicine_id, pharmacy_id, quantity, total_price))
         except Exception as e:
             print(f"Error inserting bill: {e}")
->>>>>>> 18ae18b9c207c798c51892ecb7dbb6298521604b
+
     return render_template('billing.html', total_price=total_price)
 
 
@@ -361,8 +362,6 @@ def supplier_medicines(supplier_id):
     supplier = fetch_one("SELECT * FROM suppliers WHERE id = %s", (supplier_id,))
     return render_template('supplier_medicines.html', medicines=medicines, supplier_name=supplier['name'])
 
-<<<<<<< HEAD
-=======
 def fetch_all(query, params=None):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)  # Ensure we get dictionary results
@@ -383,7 +382,6 @@ def fetch_one(query, params=None):
     return result
 
 
->>>>>>> 18ae18b9c207c798c51892ecb7dbb6298521604b
 
 @app.route('/increment_quantity/<int:medicine_id>', methods=['POST'])
 def increment_quantity(medicine_id):
@@ -392,9 +390,9 @@ def increment_quantity(medicine_id):
     
     try:
         # Increment quantity by 1
-        update_query = "UPDATE medicines SET quantity = quantity + 1 WHERE id = %s"
-        cursor.execute(update_query, (medicine_id,))
-        connection.commit()
+        # update_query = "UPDATE medicines SET quantity = quantity + 1 WHERE id = %s"
+        # cursor.execute(update_query, (medicine_id,))
+        # connection.commit()
         
         # Get the new quantity to send back to the client
         select_query = "SELECT quantity FROM medicines WHERE id = %s"
