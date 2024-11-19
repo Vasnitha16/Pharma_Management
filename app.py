@@ -516,5 +516,18 @@ def generate_bill(medicine_id):
         cursor.close()
         conn.close()
 
+@app.route('/process_checkout', methods=['POST'])
+def process_checkout():
+    bill_items = request.json.get('bill_items', [])
+    if not bill_items:
+        return jsonify({"message": "No items in the bill to process."}), 400
+
+    # Add logic to save or process the bill
+    print("Processing the following bill items:", bill_items)
+
+    # Return success response
+    return jsonify({"message": "Bill processed successfully. Redirecting to login page."})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
