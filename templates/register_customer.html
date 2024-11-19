@@ -1,3 +1,45 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Customer - Pharmacy Database Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <div class="center-container">
+        <div class="content">
+          
+            <div class="left-side">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Register Customer Image">
+            </div>
+
+      
+            <div class="right-side">
+                <div class="login-form">
+                    <h1>Register Customer</h1>
+                    <h2>Create your account</h2>
+                    <form action="/register_customer" method="post">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <div class="actions">
+                            <button type="submit">Register</button>
+                        </div>
+                    </form>
+                    <p>Already have an account? <a href="/login_customer">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +51,28 @@
 <body>
     <div class="center-container">
         <div class="content">
-            <!-- Left side (Image) -->
+           
             <div class="left-side">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOjoriY2rowTetpXnICmtsIGrk2Tj9Rfblkg&s" alt="Register Customer Image">
             </div>
 
-            <!-- Right side (Registration form) -->
+           
             <div class="right-side">
                 <div class="login-form">
                     <h1>Register Customer</h1>
                     <h2>Create your account</h2>
+
+                  
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <ul>
+                                {% for category, message in messages %}
+                                    <li class="{{ category }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+
                     <form action="/register_customer" method="post">
                         <div class="form-group">
                             <label for="username">Username</label>

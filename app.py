@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import mysql.connector
+from mysql.connector import Error
 
 import os
 
@@ -73,11 +74,12 @@ def register_customer():
         query = "SELECT * FROM user_credentials WHERE username = %s"
         user = fetch_one(query, (username,))
         if user:
-            return "Username already exists!"
+            return "Duplicate username not allowed in user_credentials!"
         query = "INSERT INTO user_credentials (username, password) VALUES (%s, %s)"
         execute_query(query, (username, password))
         return redirect(url_for('login_customer'))
     return render_template('register_customer.html')
+
 
 @app.route('/login_pharmacist', methods=['GET', 'POST'])
 def login_pharmacist():
@@ -102,6 +104,47 @@ def login_pharmacist():
 
     return render_template('login_pharmacist.html')
 
+# @app.route('/register_pharmacist', methods=['GET', 'POST'])
+# def register_pharmacist():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         pharmacy_id = request.form['pharmacy_id']
+
+#         # Establish a database connection
+#         connection = get_db_connection()
+#         cursor = connection.cursor()
+
+#         # Check if the pharmacy ID exists in the pharmacies table
+#         cursor.execute("SELECT * FROM pharmacies WHERE id = %s", (pharmacy_id,))
+#         pharmacy = cursor.fetchone()
+
+#         if not pharmacy:
+#             flash('Invalid Pharmacy ID. Please check and try again.')
+#         else:
+#             # Check if the username already exists
+#             cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s", (username,))
+#             existing_user = cursor.fetchone()
+
+#             if existing_user:
+#                 flash('Username already exists')
+#             else:
+#                 # Insert new pharmacist into pharmacy_credentials table with plain text password
+#                 cursor.execute("""
+#                     INSERT INTO pharmacy_credentials (username, password, pharmacy_id)
+#                     VALUES (%s, %s, %s)
+#                 """, (username, password, pharmacy_id))
+#                 connection.commit()
+
+#                 flash('Registration successful! Please log in.')
+
+#         cursor.close()
+#         connection.close()
+
+#         return redirect(url_for('login_pharmacist'))
+
+#     return render_template('register_pharmacist.html')
+
 @app.route('/register_pharmacist', methods=['GET', 'POST'])
 def register_pharmacist():
     if request.method == 'POST':
@@ -109,39 +152,44 @@ def register_pharmacist():
         password = request.form['password']
         pharmacy_id = request.form['pharmacy_id']
 
-        # Establish a database connection
-        connection = get_db_connection()
-        cursor = connection.cursor()
+        try:
+            # Establish a database connection
+            connection = get_db_connection()
+            cursor = connection.cursor()
 
-        # Check if the pharmacy ID exists in the pharmacies table
-        cursor.execute("SELECT * FROM pharmacies WHERE id = %s", (pharmacy_id,))
-        pharmacy = cursor.fetchone()
+            # Check if the pharmacy ID exists
+            cursor.execute("SELECT * FROM pharmacies WHERE id = %s", (pharmacy_id,))
+            pharmacy = cursor.fetchone()
 
-        if not pharmacy:
-            flash('Invalid Pharmacy ID. Please check and try again.')
-        else:
-            # Check if the username already exists
-            cursor.execute("SELECT * FROM pharmacy_credentials WHERE username=%s", (username,))
-            existing_user = cursor.fetchone()
-
-            if existing_user:
-                flash('Username already exists')
+            if not pharmacy:
+                flash('Invalid Pharmacy ID. Please check and try again.', 'error')
+                print("Invalid Pharmacy ID")  # Debugging log
             else:
-                # Insert new pharmacist into pharmacy_credentials table with plain text password
+                # Insert into pharmacy_credentials
                 cursor.execute("""
                     INSERT INTO pharmacy_credentials (username, password, pharmacy_id)
                     VALUES (%s, %s, %s)
                 """, (username, password, pharmacy_id))
                 connection.commit()
+                flash('Registration successful! Please log in.', 'success')
+                print("Pharmacist registered successfully") 
 
-                flash('Registration successful! Please log in.')
+        except mysql.connector.Error as e:
+            print(f"Error: {e}") 
+            if "Duplicate username" in str(e):
+                flash("Username is already taken. Please choose a different one.", 'error')
+            else:
+                flash(f"An error occurred: {str(e)}", 'error')
 
-        cursor.close()
-        connection.close()
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
 
         return redirect(url_for('login_pharmacist'))
 
     return render_template('register_pharmacist.html')
+
 
 # Route to display the list of pharmacies
 @app.route('/pharmacy_list')
